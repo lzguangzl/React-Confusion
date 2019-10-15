@@ -39,7 +39,7 @@ function RenderDish({ dish }) {
   }
 }
 
-function RenderComments({ comments }) {
+function RenderComments({ comments, addComment, dishId }) {
   if (comments != null) {
     const cmts = comments.map(comment => {
       return (
@@ -61,7 +61,7 @@ function RenderComments({ comments }) {
       <div className="col-12 col-md-5 m-1">
         <h4>Comments</h4>
         <ul className="list-unstyled">{cmts}</ul>
-        <CommentForm />
+        <CommentForm dishId={dishId} addComment={addComment} />
       </div>
     )
   } else {
@@ -85,8 +85,12 @@ class CommentForm extends Component {
 
   handleSubmit = values => {
     this.toggleModal()
-    console.log('Current State is: ' + JSON.stringify(values))
-    alert('Current State is: ' + JSON.stringify(values))
+    this.props.addComment(
+      this.props.dishId,
+      values.rating,
+      values.author,
+      values.comment
+    )
   }
   render() {
     return (
@@ -118,14 +122,14 @@ class CommentForm extends Component {
                 </Col>
               </Row>
               <Row className="form-group">
-                <Label htmlFor="yourName" md={12}>
+                <Label htmlFor="author" md={12}>
                   Your Name
                 </Label>
                 <Col md={12}>
                   <Control.text
-                    model=".yourName"
-                    name="yourName"
-                    id="yourName"
+                    model=".author"
+                    name="author"
+                    id="author"
                     placeholder="Your Name"
                     className="form-control"
                     validators={{
@@ -135,7 +139,7 @@ class CommentForm extends Component {
                   ></Control.text>
                   <Errors
                     className="text-danger"
-                    model=".yourName"
+                    model=".author"
                     show="touched"
                     messages={{
                       minLength: 'Must be greater than 2 characters',
@@ -191,7 +195,11 @@ const DishDetail = props => {
         </div>
         <div className="row">
           <RenderDish dish={props.dish} />
-          <RenderComments comments={props.comments} />
+          <RenderComments
+            comments={props.comments}
+            addComment={props.addComment}
+            dishId={props.dish.id}
+          />
         </div>
       </div>
     )
